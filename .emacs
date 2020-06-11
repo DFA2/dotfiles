@@ -75,10 +75,8 @@
 (require 'projectile)
 (require 'cc-mode)
 ;; (require 'go-flycheck)
-(require 'go-projectile)
 (require 'company)
-(require 'go-mode)
-(require 'company-go)
+
 (require 'uniquify)
 (require 'lsp-mode)
 (require 'eglot)
@@ -144,52 +142,6 @@
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
-;; erlang related
-(defun set-erlang-dir (dir)
-  (let ((bin-dir (expand-file-name "bin" dir))
-        (tools-dirs (file-expand-wildcards
-                     (concat dir "/lib/tools-*/emacs"))))
-
-    (when tools-dirs
-      (add-to-list 'load-path (car tools-dirs))
-      (add-to-list 'exec-path bin-dir)
-      (defvar erlang-electric-commands
-        '(erlang-electric-comma
-          erlang-electric-semicolon
-          erlang-electric-gt
-          erlang-electric-newline))
-      (setq erlang-root-dir dir)
-      (require 'erlang-start))))
-
-(defun erl-root ()
-   (shell-command-to-string "erl -boot start_clean -noinput -noshell -eval 'io:format(os:getenv(\"ROOTDIR\")),halt().'"))
-
-(set-erlang-dir (erl-root))
-
-(setq erlang-indent-level 2)
-
-(defun my-erlang-mode-hook ()
-  ;; when starting an Erlang shell in Emacs, default in the node name
-  (setq inferior-erlang-machine-options '("-sname" "emacs"))
-  ;; add Erlang functions to an imenu menu
-  (imenu-add-to-menubar "imenu")
-  ;; customize keys
-  (local-set-key [return] 'newline-and-indent)
-  )
-;; Some Erlang customizations
-(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
-
-;; (require 'flymake)
-;; (defun flymake-erlang-init ()
-;;   (let* ((temp-file (flymake-init-create-temp-buffer-copy
-;; 		     'flymake-create-temp-inplace))
-;; 	 (local-file (file-relative-name temp-file
-;; 		(file-name-directory buffer-file-name))))
-;;     (list "~/.emacs.d/check_erlang.erl" (list local-file))))
-
-;; (add-hook 'find-file-hook 'flymake-find-file-hook)
-
-;; (add-to-list 'flymake-allowed-file-name-masks '("\\.erl\\'" flymake-erlang-init))
 
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -293,20 +245,16 @@
 (use-package yasnippet
   :ensure t
   :commands yas-minor-mode
-  :hook (go-mode . yas-minor-mode))
+  :hook (python-mode . yas-minor-mode))
 
-(use-package flycheck-golangci-lint
-  :ensure t
-  :hook (go-mode . flycheck-golangci-lint-setup))
-
-;; elixir related
-(add-hook 'elixir-mode-hook 'eglot-ensure)
-(add-to-list 'auto-mode-alist '("\\.eex$" . web-mode))
-(add-to-list 'elixir-mode-hook 'company)
-(add-hook 'elixir-mode-hook
-          (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil t)))
-(add-hook 'elixir-mode-hook #'lsp)
-(add-to-list 'eglot-server-programs `(elixir-mode "language_server.sh"))
+;; elixir related ;; Kept for further interest
+;; (add-hook 'elixir-mode-hook 'eglot-ensure)
+;; (add-to-list 'auto-mode-alist '("\\.eex$" . web-mode))
+;; (add-to-list 'elixir-mode-hook 'company)
+;; (add-hook 'elixir-mode-hook
+;;           (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil t)))
+;; (add-hook 'elixir-mode-hook #'lsp)
+;; (add-to-list 'eglot-server-programs `(elixir-mode "language_server.sh"))
 
 
 ;; ccls
